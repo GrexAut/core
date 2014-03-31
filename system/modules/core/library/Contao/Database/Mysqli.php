@@ -12,6 +12,8 @@
 
 namespace Contao\Database;
 
+use Database, Database\Mysqli\Statement, Exception;
+
 
 /**
  * MySQLi-specific database class
@@ -20,7 +22,7 @@ namespace Contao\Database;
  * @author    Leo Feyer <https://github.com/leofeyer>
  * @copyright Leo Feyer 2005-2014
  */
-class Mysqli extends \Database
+class Mysqli extends Database
 {
 
 	/**
@@ -33,7 +35,7 @@ class Mysqli extends \Database
 	/**
 	 * Connect to the database server and select the database
 	 *
-	 * @throws \Exception If the connection cannot be established
+	 * @throws Exception If the connection cannot be established
 	 */
 	protected function connect()
 	{
@@ -48,7 +50,7 @@ class Mysqli extends \Database
 
 		if ($this->resConnection->connect_error)
 		{
-			throw new \Exception($this->resConnection->connect_error);
+			throw new Exception($this->resConnection->connect_error);
 		}
 
 		$this->resConnection->set_charset($this->arrConfig['dbCharset']);
@@ -326,15 +328,15 @@ class Mysqli extends \Database
 
 
 	/**
-	 * Create a Database\Statement object
+	 * Create a database statement object
 	 *
 	 * @param resource $resConnection        The connection ID
 	 * @param boolean  $blnDisableAutocommit If true, autocommitting will be disabled
 	 *
-	 * @return \Database\Mysqli\Statement The Database\Statement object
+	 * @return Statement The database statement object
 	 */
 	protected function createStatement($resConnection, $blnDisableAutocommit)
 	{
-		return new \Database\Mysqli\Statement($resConnection, $blnDisableAutocommit);
+		return new Statement($resConnection, $blnDisableAutocommit);
 	}
 }

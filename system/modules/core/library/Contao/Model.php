@@ -12,6 +12,10 @@
 
 namespace Contao;
 
+use Database, Database\Result, Database\Statement, DcaExtractor, Exception,
+	InvalidArgumentException, LogicException, Model\Collection,
+	Model\QueryBuilder, Model\Registry;
+
 
 /**
  * Reads objects from and writes them to to the database
@@ -101,13 +105,13 @@ abstract class Model
 	/**
 	 * Load the relations and optionally process a result set
 	 *
-	 * @param \Database\Result $objResult An optional database result
+	 * @param Result $objResult An optional database result
 	 */
-	public function __construct(\Database\Result $objResult=null)
+	public function __construct(Result $objResult=null)
 	{
 		$this->arrModified = array();
 
-		$objDca = new \DcaExtractor(static::$strTable);
+		$objDca = new DcaExtractor(static::$strTable);
 		$this->arrRelations = $objDca->getRelations();
 
 		if ($objResult !== null)
@@ -146,7 +150,7 @@ abstract class Model
 				}
 				else
 				{
-					$objRelated = \Model\Registry::getInstance()->fetch($table, $row[$intPk]);
+					$objRelated = Registry::getInstance()->fetch($table, $row[$intPk]);
 
 					if ($objRelated !== null)
 					{
@@ -163,7 +167,7 @@ abstract class Model
 			}
 
 			$this->setRow($arrData); // see #5439
-			\Model\Registry::getInstance()->register($this);
+			Registry::getInstance()->register($this);
 		}
 	}
 
@@ -278,7 +282,7 @@ abstract class Model
 	 *
 	 * @param array $arrData The data record
 	 *
-	 * @return \Model The model object
+	 * @return Model The model object
 	 */
 	public function setRow(array $arrData)
 	{
@@ -300,7 +304,7 @@ abstract class Model
 	 *
 	 * @param array $arrData The data record
 	 *
-	 * @return \Model The model object
+	 * @return Model The model object
 	 */
 	public function mergeRow(array $arrData)
 	{
@@ -338,7 +342,7 @@ abstract class Model
 	/**
 	 * Return the object instance
 	 *
-	 * @return \Model The model object
+	 * @return Model The model object
 	 */
 	public function current()
 	{
@@ -349,30 +353,30 @@ abstract class Model
 	/**
 	 * Save the current record
 	 *
-	 * @return \Model The model object
+	 * @return Model The model object
 	 *
-	 * @throws \InvalidArgumentException If an argument is passed
-	 * @throws \LogicException           If the model cannot be saved
+	 * @throws InvalidArgumentException If an argument is passed
+	 * @throws LogicException           If the model cannot be saved
 	 */
 	public function save()
 	{
 		// Deprecated call
 		if (count(func_get_args()))
 		{
-			throw new \InvalidArgumentException('The $blnForceInsert argument has been removed (see system/docs/UPGRADE.md)');
+			throw new InvalidArgumentException('The $blnForceInsert argument has been removed (see system/docs/UPGRADE.md)');
 		}
 
 		// The instance cannot be saved
 		if ($this->blnPreventSaving)
 		{
-			throw new \LogicException('The model instance has been detached and cannot be saved');
+			throw new LogicException('The model instance has been detached and cannot be saved');
 		}
 
-		$objDatabase = \Database::getInstance();
+		$objDatabase = Database::getInstance();
 		$arrFields = $objDatabase->getFieldNames(static::$strTable);
 
 		// The model is in the registry
-		if (\Model\Registry::getInstance()->isRegistered($this))
+		if (Registry::getInstance()->isRegistered($this))
 		{
 			$arrSet = array();
 			$arrRow = $this->row();
@@ -447,7 +451,7 @@ abstract class Model
 			$this->postSave(self::INSERT);
 			$this->arrModified = array(); // reset after postSave()
 
-			\Model\Registry::getInstance()->register($this);
+			Registry::getInstance()->register($this);
 		}
 
 		return $this;
@@ -497,14 +501,14 @@ abstract class Model
 		}
 
 		// Delete the row
-		$intAffected = \Database::getInstance()->prepare("DELETE FROM " . static::$strTable . " WHERE " . static::$strPk . "=?")
-											   ->execute($intPk)
-											   ->affectedRows;
+		$intAffected = Database::getInstance()->prepare("DELETE FROM " . static::$strTable . " WHERE " . static::$strPk . "=?")
+											  ->execute($intPk)
+											  ->affectedRows;
 
 		if ($intAffected)
 		{
 			// Unregister the model
-			\Model\Registry::getInstance()->unregister($this);
+			Registry::getInstance()->unregister($this);
 
 			// Remove the primary key (see #6162)
 			$this->arrData[static::$strPk] = null;
@@ -520,9 +524,9 @@ abstract class Model
 	 * @param string $strKey     The property name
 	 * @param array  $arrOptions An optional options array
 	 *
-	 * @return \Model|\Model\Collection The model or a model collection if there are multiple rows
+	 * @return Model|Collection The model or a model collection if there are multiple rows
 	 *
-	 * @throws \Exception If $strKey is not a related field
+	 * @throws Exception If $strKey is not a related field
 	 */
 	public function getRelated($strKey, array $arrOptions=array())
 	{
@@ -535,7 +539,7 @@ abstract class Model
 		// The relation does not exist
 		if (!isset($this->arrRelations[$strKey]))
 		{
-			throw new \Exception("Field $strKey does not seem to be related");
+			throw new Exception("Field $strKey does not seem to be related");
 		}
 
 		// The relation exists but there is no reference yet (see #6161)
@@ -569,7 +573,7 @@ abstract class Model
 				(
 					array
 					(
-						'order' => \Database::getInstance()->findInSet($strField, $arrValues)
+						'order' => Database::getInstance()->findInSet($strField, $arrValues)
 					),
 
 					$arrOptions
@@ -599,8 +603,8 @@ abstract class Model
 		}
 
 		// Reload the database record
-		$res = \Database::getInstance()->prepare("SELECT * FROM " . static::$strTable . " WHERE " . static::$strPk . "=?")
-									   ->execute($intPk);
+		$res = Database::getInstance()->prepare("SELECT * FROM " . static::$strTable . " WHERE " . static::$strPk . "=?")
+									  ->execute($intPk);
 
 		$this->setRow($res->row());
 	}
@@ -611,7 +615,7 @@ abstract class Model
 	 */
 	public function detach()
 	{
-		\Model\Registry::getInstance()->unregister($this);
+		Registry::getInstance()->unregister($this);
 	}
 
 
@@ -631,14 +635,14 @@ abstract class Model
 	 * @param mixed $varValue   The property value
 	 * @param array $arrOptions An optional options array
 	 *
-	 * @return \Model|null The model or null if the result is empty
+	 * @return Model|null The model or null if the result is empty
 	 */
 	public static function findByPk($varValue, array $arrOptions=array())
 	{
 		// Try to load from the registry
 		if (empty($arrOptions))
 		{
-			$objModel = \Model\Registry::getInstance()->fetch(static::$strTable, $varValue);
+			$objModel = Registry::getInstance()->fetch(static::$strTable, $varValue);
 
 			if ($objModel !== null)
 			{
@@ -669,14 +673,14 @@ abstract class Model
 	 * @param mixed $varId      The ID or alias
 	 * @param array $arrOptions An optional options array
 	 *
-	 * @return \Model|null The model or null if the result is empty
+	 * @return Model|null The model or null if the result is empty
 	 */
 	public static function findByIdOrAlias($varId, array $arrOptions=array())
 	{
 		// Try to load from the registry
 		if (is_numeric($varId) && empty($arrOptions))
 		{
-			$objModel = \Model\Registry::getInstance()->fetch(static::$strTable, $varId);
+			$objModel = Registry::getInstance()->fetch(static::$strTable, $varId);
 
 			if ($objModel !== null)
 			{
@@ -709,7 +713,7 @@ abstract class Model
 	 * @param array $arrIds     An array of IDs
 	 * @param array $arrOptions An optional options array
 	 *
-	 * @return \Model\Collection|null A collection of models or null if there are no records
+	 * @return Collection|null A collection of models or null if there are no records
 	 */
 	public static function findMultipleByIds($arrIds, array $arrOptions=array())
 	{
@@ -728,7 +732,7 @@ abstract class Model
 
 			if (empty($arrOptions))
 			{
-				$arrRegistered[$intId] = \Model\Registry::getInstance()->fetch(static::$strTable, $intId);
+				$arrRegistered[$intId] = Registry::getInstance()->fetch(static::$strTable, $intId);
 			}
 
 			if ($arrRegistered[$intId] === null)
@@ -748,7 +752,7 @@ abstract class Model
 				(
 					'column' => array("$t.id IN(" . implode(',', array_map('intval', $arrUnregistered)) . ")"),
 					'value'  => null,
-					'order'  => \Database::getInstance()->findInSet("$t.id", $arrIds),
+					'order'  => Database::getInstance()->findInSet("$t.id", $arrIds),
 					'return' => 'Collection'
 				),
 
@@ -767,7 +771,7 @@ abstract class Model
 			}
 		}
 
-		return new \Model\Collection(array_filter(array_values($arrRegistered)), static::$strTable);
+		return new Collection(array_filter(array_values($arrRegistered)), static::$strTable);
 	}
 
 
@@ -778,7 +782,7 @@ abstract class Model
 	 * @param mixed $varValue   The property value
 	 * @param array $arrOptions An optional options array
 	 *
-	 * @return \Model|null The model or null if the result is empty
+	 * @return Model|null The model or null if the result is empty
 	 */
 	public static function findOneBy($strColumn, $varValue, array $arrOptions=array())
 	{
@@ -827,7 +831,7 @@ abstract class Model
 	 * @param mixed $varValue   The property value
 	 * @param array $arrOptions An optional options array
 	 *
-	 * @return \Model\Collection|null The model collection or null if the result is empty
+	 * @return Collection|null The model collection or null if the result is empty
 	 */
 	public static function findBy($strColumn, $varValue, array $arrOptions=array())
 	{
@@ -852,7 +856,7 @@ abstract class Model
 	 *
 	 * @param array $arrOptions An optional options array
 	 *
-	 * @return \Model\Collection|null The model collection or null if the result is empty
+	 * @return Collection|null The model collection or null if the result is empty
 	 */
 	public static function findAll(array $arrOptions=array())
 	{
@@ -876,9 +880,9 @@ abstract class Model
 	 * @param string $name The method name
 	 * @param array  $args The passed arguments
 	 *
-	 * @return \Model|\Model\Collection A model or model collection
+	 * @return Model|Collection A model or model collection
 	 *
-	 * @throws \Exception If the method name is invalid
+	 * @throws Exception If the method name is invalid
 	 */
 	public static function __callStatic($name, $args)
 	{
@@ -898,7 +902,7 @@ abstract class Model
 			return call_user_func_array('static::countBy', $args);
 		}
 
-		throw new \Exception("Unknown method $name");
+		throw new Exception("Unknown method $name");
 	}
 
 
@@ -916,7 +920,7 @@ abstract class Model
 	 *
 	 * @param array $arrOptions The options array
 	 *
-	 * @return \Model|\Model\Collection|null A model, model collection or null if the result is empty
+	 * @return Model|Collection|null A model, model collection or null if the result is empty
 	 */
 	protected static function find(array $arrOptions)
 	{
@@ -926,9 +930,9 @@ abstract class Model
 		}
 
 		$arrOptions['table'] = static::$strTable;
-		$strQuery = \Model\QueryBuilder::find($arrOptions);
+		$strQuery = QueryBuilder::find($arrOptions);
 
-		$objStatement = \Database::getInstance()->prepare($strQuery);
+		$objStatement = Database::getInstance()->prepare($strQuery);
 
 		// Defaults for limit and offset
 		if (!isset($arrOptions['limit']))
@@ -962,7 +966,7 @@ abstract class Model
 			$intPk = $objResult->$strPk;
 
 			// Try to load from the registry
-			$objModel = \Model\Registry::getInstance()->fetch(static::$strTable, $intPk);
+			$objModel = Registry::getInstance()->fetch(static::$strTable, $intPk);
 
 			if ($objModel !== null)
 			{
@@ -973,7 +977,7 @@ abstract class Model
 		}
 		else
 		{
-			return \Model\Collection::createFromDbResult($objResult, static::$strTable);
+			return Collection::createFromDbResult($objResult, static::$strTable);
 		}
 	}
 
@@ -981,11 +985,11 @@ abstract class Model
 	/**
 	 * Modify the database statement before it is executed
 	 *
-	 * @param \Database\Statement $objStatement The database statement object
+	 * @param Statement $objStatement The database statement object
 	 *
-	 * @return \Database\Statement The database statement object
+	 * @return Statement The database statement object
 	 */
-	protected static function preFind(\Database\Statement $objStatement)
+	protected static function preFind(Statement $objStatement)
 	{
 		return $objStatement;
 	}
@@ -994,11 +998,11 @@ abstract class Model
 	/**
 	 * Modify the database result before the model is created
 	 *
-	 * @param \Database\Result $objResult The database result object
+	 * @param Result $objResult The database result object
 	 *
-	 * @return \Database\Result The database result object
+	 * @return Result The database result object
 	 */
-	protected static function postFind(\Database\Result $objResult)
+	protected static function postFind(Result $objResult)
 	{
 		return $objResult;
 	}
@@ -1019,14 +1023,14 @@ abstract class Model
 			return 0;
 		}
 
-		$strQuery = \Model\QueryBuilder::count(array
+		$strQuery = QueryBuilder::count(array
 		(
 			'table'  => static::$strTable,
 			'column' => $strColumn,
 			'value'  => $varValue
 		));
 
-		return (int) \Database::getInstance()->prepare($strQuery)->execute($varValue)->count;
+		return (int) Database::getInstance()->prepare($strQuery)->execute($varValue)->count;
 	}
 
 

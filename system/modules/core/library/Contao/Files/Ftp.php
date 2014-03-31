@@ -12,6 +12,8 @@
 
 namespace Contao\Files;
 
+use Config, Exception, Files;
+
 
 /**
  * Manage files via FTP ("Safe Mode Hack")
@@ -20,7 +22,7 @@ namespace Contao\Files;
  * @author    Leo Feyer <https://github.com/leofeyer>
  * @copyright Leo Feyer 2005-2014
  */
-class Ftp extends \Files
+class Ftp extends Files
 {
 
 	/**
@@ -57,7 +59,7 @@ class Ftp extends \Files
 	/**
 	 * Establish an FTP connection
 	 *
-	 * @throws \Exception If an FTP connection cannot be established
+	 * @throws Exception If an FTP connection cannot be established
 	 */
 	public function connect()
 	{
@@ -67,31 +69,31 @@ class Ftp extends \Files
 		}
 
 		// Check the FTP credentials
-		if (\Config::get('ftpHost') == '')
+		if (Config::get('ftpHost') == '')
 		{
-			throw new \Exception('The FTP host must not be empty');
+			throw new Exception('The FTP host must not be empty');
 		}
-		elseif (\Config::get('ftpUser') == '')
+		elseif (Config::get('ftpUser') == '')
 		{
-			throw new \Exception('The FTP username must not be empty');
+			throw new Exception('The FTP username must not be empty');
 		}
-		elseif (\Config::get('ftpPass') == '')
+		elseif (Config::get('ftpPass') == '')
 		{
-			throw new \Exception('The FTP password must not be empty');
+			throw new Exception('The FTP password must not be empty');
 		}
 
-		$ftp_connect = (\Config::get('ftpSSL') && function_exists('ftp_ssl_connect')) ? 'ftp_ssl_connect' : 'ftp_connect';
+		$ftp_connect = (Config::get('ftpSSL') && function_exists('ftp_ssl_connect')) ? 'ftp_ssl_connect' : 'ftp_connect';
 
 		// Try to connect
-		if (($resConnection = $ftp_connect(\Config::get('ftpHost'), \Config::get('ftpPort'), 5)) == false)
+		if (($resConnection = $ftp_connect(Config::get('ftpHost'), Config::get('ftpPort'), 5)) == false)
 		{
-			throw new \Exception('Could not connect to the FTP server');
+			throw new Exception('Could not connect to the FTP server');
 		}
 
 		// Try to login
-		elseif (ftp_login($resConnection, \Config::get('ftpUser'), \Config::get('ftpPass')) == false)
+		elseif (ftp_login($resConnection, Config::get('ftpUser'), Config::get('ftpPass')) == false)
 		{
-			throw new \Exception('Authentication failed');
+			throw new Exception('Authentication failed');
 		}
 
 		// Switch to passive mode
@@ -113,8 +115,8 @@ class Ftp extends \Files
 	{
 		$this->connect();
 		$this->validate($strDirectory);
-		$return = @ftp_mkdir($this->resConnection, \Config::get('ftpPath') . $strDirectory) ? true : false;
-		$this->chmod($strDirectory, \Config::get('defaultFolderChmod'));
+		$return = @ftp_mkdir($this->resConnection, Config::get('ftpPath') . $strDirectory) ? true : false;
+		$this->chmod($strDirectory, Config::get('defaultFolderChmod'));
 
 		return $return;
 	}
@@ -132,7 +134,7 @@ class Ftp extends \Files
 		$this->connect();
 		$this->validate($strDirectory);
 
-		return @ftp_rmdir($this->resConnection, \Config::get('ftpPath') . $strDirectory);
+		return @ftp_rmdir($this->resConnection, Config::get('ftpPath') . $strDirectory);
 	}
 
 
@@ -154,7 +156,7 @@ class Ftp extends \Files
 		{
 			$this->connect();
 
-			if (!@ftp_fput($this->resConnection, \Config::get('ftpPath') . $strFile, $resFile, FTP_BINARY))
+			if (!@ftp_fput($this->resConnection, Config::get('ftpPath') . $strFile, $resFile, FTP_BINARY))
 			{
 				return false;
 			}
@@ -234,13 +236,13 @@ class Ftp extends \Files
 		// Rename directories
 		if (is_dir(TL_ROOT . '/' . $strOldName))
 		{
-			return @ftp_rename($this->resConnection, \Config::get('ftpPath') . $strOldName, \Config::get('ftpPath') . $strNewName);
+			return @ftp_rename($this->resConnection, Config::get('ftpPath') . $strOldName, Config::get('ftpPath') . $strNewName);
 		}
 
 		// Unix fix: rename case sensitively
 		if (strcasecmp($strOldName, $strNewName) === 0 && strcmp($strOldName, $strNewName) !== 0)
 		{
-			@ftp_rename($this->resConnection, \Config::get('ftpPath') . $strOldName, \Config::get('ftpPath') . $strOldName . '__');
+			@ftp_rename($this->resConnection, Config::get('ftpPath') . $strOldName, Config::get('ftpPath') . $strOldName . '__');
 			$strOldName .= '__';
 		}
 
@@ -269,15 +271,15 @@ class Ftp extends \Files
 	{
 		$this->connect();
 		$this->validate($strSource, $strDestination);
-		$return = @ftp_put($this->resConnection, \Config::get('ftpPath') . $strDestination, TL_ROOT . '/' . $strSource, FTP_BINARY);
+		$return = @ftp_put($this->resConnection, Config::get('ftpPath') . $strDestination, TL_ROOT . '/' . $strSource, FTP_BINARY);
 
 		if (is_dir(TL_ROOT . '/' . $strDestination))
 		{
-			$this->chmod($strDestination, \Config::get('defaultFolderChmod'));
+			$this->chmod($strDestination, Config::get('defaultFolderChmod'));
 		}
 		else
 		{
-			$this->chmod($strDestination, \Config::get('defaultFileChmod'));
+			$this->chmod($strDestination, Config::get('defaultFileChmod'));
 		}
 
 		return $return;
@@ -296,7 +298,7 @@ class Ftp extends \Files
 		$this->connect();
 		$this->validate($strFile);
 
-		return @ftp_delete($this->resConnection, \Config::get('ftpPath') . $strFile);
+		return @ftp_delete($this->resConnection, Config::get('ftpPath') . $strFile);
 	}
 
 
@@ -313,7 +315,7 @@ class Ftp extends \Files
 		$this->connect();
 		$this->validate($strFile);
 
-		return @ftp_chmod($this->resConnection, $varMode, \Config::get('ftpPath') . $strFile);
+		return @ftp_chmod($this->resConnection, $varMode, Config::get('ftpPath') . $strFile);
 	}
 
 
@@ -343,6 +345,6 @@ class Ftp extends \Files
 		$this->connect();
 		$this->validate($strSource, $strDestination);
 
-		return @ftp_put($this->resConnection, \Config::get('ftpPath') . $strDestination, $strSource, FTP_BINARY);
+		return @ftp_put($this->resConnection, Config::get('ftpPath') . $strDestination, $strSource, FTP_BINARY);
 	}
 }

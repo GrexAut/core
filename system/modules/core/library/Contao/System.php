@@ -12,6 +12,9 @@
 
 namespace Contao;
 
+use Config, Controller, Database, Date, Environment, File, Idna, Input, Message,
+	Model, ModuleLoader, Session, String, Validator;
+
 
 /**
  * Abstract library base class
@@ -22,7 +25,7 @@ namespace Contao;
  *
  * Usage:
  *
- *     class MyClass extends \System
+ *     class MyClass extends System
  *     {
  *         public function __construct()
  *         {
@@ -158,16 +161,16 @@ abstract class System
 		$strUa = 'N/A';
 		$strIp = '127.0.0.1';
 
-		if (\Environment::get('httpUserAgent'))
+		if (Environment::get('httpUserAgent'))
 		{
-			$strUa = \Environment::get('httpUserAgent');
+			$strUa = Environment::get('httpUserAgent');
 		}
-		if (\Environment::get('remoteAddr'))
+		if (Environment::get('remoteAddr'))
 		{
-			$strIp = static::anonymizeIp(\Environment::get('ip'));
+			$strIp = static::anonymizeIp(Environment::get('ip'));
 		}
 
-		\Database::getInstance()->prepare("INSERT INTO tl_log (tstamp, source, action, username, text, func, ip, browser) VALUES(?, ?, ?, ?, ?, ?, ?, ?)")
+		Database::getInstance()->prepare("INSERT INTO tl_log (tstamp, source, action, username, text, func, ip, browser) VALUES(?, ?, ?, ?, ?, ?, ?, ?)")
 							   ->execute(time(), (TL_MODE == 'FE' ? 'FE' : 'BE'), $strCategory, ($GLOBALS['TL_USERNAME'] ? $GLOBALS['TL_USERNAME'] : ''), specialchars($strText), $strFunction, $strIp, $strUa);
 
 		// HOOK: allow to add custom loggers
@@ -191,9 +194,9 @@ abstract class System
 	 */
 	public static function getReferer($blnEncodeAmpersands=false, $strTable=null)
 	{
-		$ref = \Input::get('ref');
-		$key = \Input::get('popup') ? 'popupReferer' : 'referer';
-		$session = \Session::getInstance()->get($key);
+		$ref = Input::get('ref');
+		$key = Input::get('popup') ? 'popupReferer' : 'referer';
+		$session = Session::getInstance()->get($key);
 
 		// Unique referer ID
 		if ($ref && isset($session[$ref]))
@@ -206,13 +209,13 @@ abstract class System
 		}
 
 		// Use a specific referer
-		if ($strTable != '' && isset($session[$strTable]) && \Input::get('act') != 'select')
+		if ($strTable != '' && isset($session[$strTable]) && Input::get('act') != 'select')
 		{
 			$session['current'] = $session[$strTable];
 		}
 
 		// Determine current or last
-		$strUrl = ($session['current'] != \Environment::get('request')) ? $session['current'] : $session['last'];
+		$strUrl = ($session['current'] != Environment::get('request')) ? $session['current'] : $session['last'];
 
 		// Remove "toggle" and "toggle all" parameters
 		$return = preg_replace('/(&(amp;)?|\?)p?tg=[^& ]*/i', '', $strUrl);
@@ -220,13 +223,13 @@ abstract class System
 		// Fallback to the generic referer in the front end
 		if ($return == '' && TL_MODE == 'FE')
 		{
-			$return = \Environment::get('httpReferer');
+			$return = Environment::get('httpReferer');
 		}
 
 		// Fallback to the current URL if there is no referer
 		if ($return == '')
 		{
-			$return = (TL_MODE == 'BE') ? 'contao/main.php' : \Environment::get('url');
+			$return = (TL_MODE == 'BE') ? 'contao/main.php' : Environment::get('url');
 		}
 
 		// Do not urldecode here!
@@ -292,13 +295,13 @@ abstract class System
 			$strCacheFile = 'system/cache/language/' . $strCreateLang . '/' . $strName . '.php';
 
 			// Try to load from cache
-			if (!\Config::get('bypassCache') && file_exists(TL_ROOT . '/' . $strCacheFile))
+			if (!Config::get('bypassCache') && file_exists(TL_ROOT . '/' . $strCacheFile))
 			{
 				include TL_ROOT . '/' . $strCacheFile;
 			}
 			else
 			{
-				foreach (\ModuleLoader::getActive() as $strModule)
+				foreach (ModuleLoader::getActive() as $strModule)
 				{
 					$strFile = 'system/modules/' . $strModule . '/languages/' . $strCreateLang . '/' . $strName;
 
@@ -490,7 +493,7 @@ abstract class System
 	{
 		if ($strPath == '')
 		{
-			$strPath = \Config::get('websitePath') ?: '/'; // see #4390
+			$strPath = Config::get('websitePath') ?: '/'; // see #4390
 		}
 
 		$objCookie = new \stdClass();
@@ -559,7 +562,7 @@ abstract class System
 	public static function anonymizeIp($strIp)
 	{
 		// The feature has been disabled
-		if (!\Config::get('privacyAnonymizeIp'))
+		if (!Config::get('privacyAnonymizeIp'))
 		{
 			return $strIp;
 		}
@@ -717,7 +720,7 @@ abstract class System
 	 */
 	public static function enableModule($strName)
 	{
-		$objFile = new \File('system/modules/' . $strName . '/.skip', true);
+		$objFile = new File('system/modules/' . $strName . '/.skip', true);
 
 		if (!$objFile->exists())
 		{
@@ -738,7 +741,7 @@ abstract class System
 	 */
 	public static function disableModule($strName)
 	{
-		$objFile = new \File('system/modules/' . $strName . '/.skip', true);
+		$objFile = new File('system/modules/' . $strName . '/.skip', true);
 
 		if ($objFile->exists())
 		{
@@ -764,7 +767,7 @@ abstract class System
 	 */
 	public static function parseDate($strFormat, $intTstamp=null)
 	{
-		return \Date::parse($strFormat, $intTstamp);
+		return Date::parse($strFormat, $intTstamp);
 	}
 
 
@@ -779,7 +782,7 @@ abstract class System
 	 */
 	public static function addToUrl($strRequest)
 	{
-		return \Controller::addToUrl($strRequest);
+		return Controller::addToUrl($strRequest);
 	}
 
 
@@ -790,7 +793,7 @@ abstract class System
 	 */
 	public static function reload()
 	{
-		\Controller::reload();
+		Controller::reload();
 	}
 
 
@@ -804,7 +807,7 @@ abstract class System
 	 */
 	public static function redirect($strLocation, $intStatus=303)
 	{
-		\Controller::redirect($strLocation, $intStatus);
+		Controller::redirect($strLocation, $intStatus);
 	}
 
 
@@ -817,7 +820,7 @@ abstract class System
 	 */
 	protected function addErrorMessage($strMessage)
 	{
-		\Message::addError($strMessage);
+		Message::addError($strMessage);
 	}
 
 
@@ -830,7 +833,7 @@ abstract class System
 	 */
 	protected function addConfirmationMessage($strMessage)
 	{
-		\Message::addConfirmation($strMessage);
+		Message::addConfirmation($strMessage);
 	}
 
 
@@ -843,7 +846,7 @@ abstract class System
 	 */
 	protected function addNewMessage($strMessage)
 	{
-		\Message::addNew($strMessage);
+		Message::addNew($strMessage);
 	}
 
 
@@ -856,7 +859,7 @@ abstract class System
 	 */
 	protected function addInfoMessage($strMessage)
 	{
-		\Message::addInfo($strMessage);
+		Message::addInfo($strMessage);
 	}
 
 
@@ -869,7 +872,7 @@ abstract class System
 	 */
 	protected function addRawMessage($strMessage)
 	{
-		\Message::addRaw($strMessage);
+		Message::addRaw($strMessage);
 	}
 
 
@@ -883,7 +886,7 @@ abstract class System
 	 */
 	protected function addMessage($strMessage, $strType)
 	{
-		\Message::add($strMessage, $strType);
+		Message::add($strMessage, $strType);
 	}
 
 
@@ -899,7 +902,7 @@ abstract class System
 	 */
 	protected function getMessages($blnDcLayout=false, $blnNoWrapper=false)
 	{
-		return \Message::generate($blnDcLayout, $blnNoWrapper);
+		return Message::generate($blnDcLayout, $blnNoWrapper);
 	}
 
 
@@ -910,7 +913,7 @@ abstract class System
 	 */
 	protected function resetMessages()
 	{
-		\Message::reset();
+		Message::reset();
 	}
 
 
@@ -923,7 +926,7 @@ abstract class System
 	 */
 	protected function getMessageTypes()
 	{
-		return \Message::getTypes();
+		return Message::getTypes();
 	}
 
 
@@ -938,7 +941,7 @@ abstract class System
 	 */
 	protected function idnaEncode($strDomain)
 	{
-		return \Idna::encode($strDomain);
+		return Idna::encode($strDomain);
 	}
 
 
@@ -953,7 +956,7 @@ abstract class System
 	 */
 	protected function idnaDecode($strDomain)
 	{
-		return \Idna::decode($strDomain);
+		return Idna::decode($strDomain);
 	}
 
 
@@ -968,7 +971,7 @@ abstract class System
 	 */
 	protected function idnaEncodeEmail($strEmail)
 	{
-		return \Idna::encodeEmail($strEmail);
+		return Idna::encodeEmail($strEmail);
 	}
 
 
@@ -983,7 +986,7 @@ abstract class System
 	 */
 	protected function idnaEncodeUrl($strUrl)
 	{
-		return \Idna::encodeUrl($strUrl);
+		return Idna::encodeUrl($strUrl);
 	}
 
 
@@ -998,7 +1001,7 @@ abstract class System
 	 */
 	protected function isValidEmailAddress($strEmail)
 	{
-		return \Validator::isEmail($strEmail);
+		return Validator::isEmail($strEmail);
 	}
 
 
@@ -1013,7 +1016,7 @@ abstract class System
 	 */
 	public static function splitFriendlyName($strEmail)
 	{
-		return \String::splitFriendlyEmail($strEmail);
+		return String::splitFriendlyEmail($strEmail);
 	}
 
 
@@ -1028,7 +1031,7 @@ abstract class System
 	 */
 	public static function getIndexFreeRequest($blnAmpersand=true)
 	{
-		return ampersand(\Environment::get('indexFreeRequest'), $blnAmpersand);
+		return ampersand(Environment::get('indexFreeRequest'), $blnAmpersand);
 	}
 
 
@@ -1043,6 +1046,6 @@ abstract class System
 	 */
 	public static function getModelClassFromTable($strTable)
 	{
-		return \Model::getClassFromTable($strTable);
+		return Model::getClassFromTable($strTable);
 	}
 }

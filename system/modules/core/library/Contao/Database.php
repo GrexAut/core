@@ -12,13 +12,15 @@
 
 namespace Contao;
 
+use Config, Database\Statement, Database\Result, Exception;
+
 
 /**
  * Abstract parent class to handle database communication
  *
  * The class is responsible for connecting to the database, listing tables and
  * fields, handling transactions and locking tables. It also creates the related
- * Database\Statement and Database\Result objects.
+ * database statement and database result objects.
  *
  * Usage:
  *
@@ -69,7 +71,7 @@ abstract class Database
 	 *
 	 * @param array $arrConfig A configuration array
 	 *
-	 * @throws \Exception If a connection cannot be established
+	 * @throws Exception If a connection cannot be established
 	 */
 	protected function __construct(array $arrConfig)
 	{
@@ -78,7 +80,7 @@ abstract class Database
 
 		if (!is_resource($this->resConnection) && !is_object($this->resConnection))
 		{
-			throw new \Exception(sprintf('Could not connect to database (%s)', $this->error));
+			throw new Exception(sprintf('Could not connect to database (%s)', $this->error));
 		}
 	}
 
@@ -128,21 +130,21 @@ abstract class Database
 	 *
 	 * @param array $arrCustom A configuration array
 	 *
-	 * @return \Database The Database object
+	 * @return Database The Database object
 	 */
 	public static function getInstance(array $arrCustom=null)
 	{
 		$arrConfig = array
 		(
-			'dbDriver'   => \Config::get('dbDriver'),
-			'dbHost'     => \Config::get('dbHost'),
-			'dbUser'     => \Config::get('dbUser'),
-			'dbPass'     => \Config::get('dbPass'),
-			'dbDatabase' => \Config::get('dbDatabase'),
-			'dbPconnect' => \Config::get('dbPconnect'),
-			'dbCharset'  => \Config::get('dbCharset'),
-			'dbPort'     => \Config::get('dbPort'),
-			'dbSocket'   => \Config::get('dbSocket')
+			'dbDriver'   => Config::get('dbDriver'),
+			'dbHost'     => Config::get('dbHost'),
+			'dbUser'     => Config::get('dbUser'),
+			'dbPass'     => Config::get('dbPass'),
+			'dbDatabase' => Config::get('dbDatabase'),
+			'dbPconnect' => Config::get('dbPconnect'),
+			'dbCharset'  => Config::get('dbCharset'),
+			'dbPort'     => Config::get('dbPort'),
+			'dbSocket'   => Config::get('dbSocket')
 		);
 
 		if (is_array($arrCustom))
@@ -165,11 +167,11 @@ abstract class Database
 
 
 	/**
-	 * Prepare a query and return a Database\Statement object
+	 * Prepare a query and return a database statement object
 	 *
 	 * @param string $strQuery The query string
 	 *
-	 * @return \Database\Statement The Database\Statement object
+	 * @return Statement The Statement object
 	 */
 	public function prepare($strQuery)
 	{
@@ -178,11 +180,11 @@ abstract class Database
 
 
 	/**
-	 * Execute a query and return a Database\Result object
+	 * Execute a query and return a database result object
 	 *
 	 * @param string $strQuery The query string
 	 *
-	 * @return \Database\Result The Database\Result object
+	 * @return Result The database result object
 	 */
 	public function execute($strQuery)
 	{
@@ -191,11 +193,11 @@ abstract class Database
 
 
 	/**
-	 * Execute a raw query and return a Database\Result object
+	 * Execute a raw query and return a database result object
 	 *
 	 * @param string $strQuery The query string
 	 *
-	 * @return \Database\Result The Database\Result object
+	 * @return Result The database result object
 	 */
 	public function query($strQuery)
 	{
@@ -708,12 +710,12 @@ abstract class Database
 
 
 	/**
-	 * Create a Database\Statement object
+	 * Create a database statement object
 	 *
 	 * @param resource $resConnection        The connection ID
 	 * @param boolean  $blnDisableAutocommit If true, autocommitting will be disabled
 	 *
-	 * @return \Database\Statement The Database\Statement object
+	 * @return Statement The database statement object
 	 */
 	abstract protected function createStatement($resConnection, $blnDisableAutocommit);
 
@@ -723,9 +725,9 @@ abstract class Database
 	 *
 	 * @param string $strQuery The query string
 	 *
-	 * @return \Database\Result The Database\Result object
+	 * @return Result The database result object
 	 *
-	 * @deprecated Use \Database::execute() instead
+	 * @deprecated Use Database::execute() instead
 	 */
 	public function executeUncached($strQuery)
 	{
@@ -738,9 +740,9 @@ abstract class Database
 	 *
 	 * @param string $strQuery The query string
 	 *
-	 * @return \Database\Result The Database\Result object
+	 * @return Result The database result object
 	 *
-	 * @deprecated Use \Database::execute() instead
+	 * @deprecated Use Database::execute() instead
 	 */
 	public function executeCached($strQuery)
 	{

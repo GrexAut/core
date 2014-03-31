@@ -12,6 +12,8 @@
 
 namespace Contao;
 
+use Config, Exception, Files\Ftp, Files\Php, ModuleLoader, SMHExtended;
+
 
 /**
  * A wrapper class for accessing the file system
@@ -42,7 +44,7 @@ abstract class Files
 
 	/**
 	 * Object instance (Singleton)
-	 * @var \Files
+	 * @var Files
 	 */
 	protected static $objInstance;
 
@@ -62,28 +64,28 @@ abstract class Files
 	/**
 	 * Instantiate the object (Factory)
 	 *
-	 * @return \Files The files object
+	 * @return Files The files object
 	 */
 	public static function getInstance()
 	{
 		if (self::$objInstance === null)
 		{
 			// Use FTP to modify files
-			if (\Config::get('useFTP'))
+			if (Config::get('useFTP'))
 			{
-				self::$objInstance = new \Files\Ftp();
+				self::$objInstance = new Ftp();
 			}
 
 			// HOOK: use the smhextended module
-			elseif (\Config::get('useSmhExtended') && in_array('smhextended', \ModuleLoader::getActive()))
+			elseif (Config::get('useSmhExtended') && in_array('smhextended', ModuleLoader::getActive()))
 			{
-				self::$objInstance = new \SMHExtended();
+				self::$objInstance = new SMHExtended();
 			}
 
 			// Use PHP to modify files
 			else
 			{
-				self::$objInstance = new \Files\Php();
+				self::$objInstance = new Php();
 			}
 		}
 
@@ -265,7 +267,7 @@ abstract class Files
 	/**
 	 * Validate a path (must not contain ../ fragments)
 	 *
-	 * @throws \Exception If the given paths are not valid
+	 * @throws Exception If the given paths are not valid
 	 */
 	protected function validate()
 	{
@@ -273,11 +275,11 @@ abstract class Files
 		{
 			if ($strPath == '') // see #5795
 			{
-				throw new \Exception('No file or folder name given');
+				throw new Exception('No file or folder name given');
 			}
 			elseif (strpos($strPath, '../') !== false)
 			{
-				throw new \Exception('Invalid file or folder name ' . $strPath);
+				throw new Exception('Invalid file or folder name ' . $strPath);
 			}
 		}
 	}

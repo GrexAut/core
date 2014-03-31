@@ -12,6 +12,8 @@
 
 namespace Contao;
 
+use Exception;
+
 
 /**
  * Automatically loads template files based on a mapper array
@@ -97,7 +99,7 @@ class TemplateLoader
 	 *
 	 * @return string The path to the template file
 	 *
-	 * @throws \Exception If $template does not exist
+	 * @throws Exception If $template does not exist
 	 */
 	public static function getPath($template, $format, $custom='templates')
 	{
@@ -124,6 +126,6 @@ class TemplateLoader
 			return TL_ROOT . '/' . self::$files[$template] . '/' . $file;
 		}
 
-		throw new \Exception('Could not find template "' . $template . '"');
+		throw new Exception('Could not find template "' . $template . '"');
 	}
 }

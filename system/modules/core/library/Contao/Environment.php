@@ -12,6 +12,8 @@
 
 namespace Contao;
 
+use Config;
+
 
 /**
  * Reads the environment variables
@@ -33,7 +35,7 @@ class Environment
 
 	/**
 	 * Object instance (Singleton)
-	 * @var \Environment
+	 * @var Environment
 	 */
 	protected static $objInstance;
 
@@ -311,7 +313,7 @@ class Environment
 		$xhost = static::get('httpXForwardedHost');
 
 		// SSL proxy
-		if ($xhost != '' && $xhost == \Config::get('sslProxyDomain'))
+		if ($xhost != '' && $xhost == Config::get('sslProxyDomain'))
 		{
 			return 'https://' .  $xhost . '/' . $host;
 		}
@@ -345,7 +347,7 @@ class Environment
 		}
 
 		$strXip = $_SERVER['HTTP_X_FORWARDED_FOR'];
-		$arrTrusted = trimsplit(',', \Config::get('proxyServerIps'));
+		$arrTrusted = trimsplit(',', Config::get('proxyServerIps'));
 
 		// Generate an array of X-Forwarded-For IPs
 		if (strpos($strXip, ',') !== false)
@@ -505,7 +507,7 @@ class Environment
 		$engine = '';
 
 		// Operating system
-		foreach (\Config::get('os') as $k=>$v)
+		foreach (Config::get('os') as $k=>$v)
 		{
 			if (stripos($ua, $k) !== false)
 			{
@@ -524,7 +526,7 @@ class Environment
 		$return->os = $os;
 
 		// Browser and version
-		foreach (\Config::get('browser') as $k=>$v)
+		foreach (Config::get('browser') as $k=>$v)
 		{
 			if (stripos($ua, $k) !== false)
 			{
@@ -612,7 +614,7 @@ class Environment
 	/**
 	 * Return the object instance (Singleton)
 	 *
-	 * @return \Environment The object instance
+	 * @return Environment The object instance
 	 *
 	 * @deprecated Environment is now a static class
 	 */

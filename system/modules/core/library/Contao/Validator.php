@@ -12,6 +12,8 @@
 
 namespace Contao;
 
+use Date, Idna, String;
+
 
 /**
  * Validates arbitrary data
@@ -105,7 +107,7 @@ class Validator
 	 */
 	public static function isDate($varValue)
 	{
-		return preg_match('~^'. \Date::getRegexp(\Date::getNumericDateFormat()) .'$~i', $varValue);
+		return preg_match('~^'. Date::getRegexp(Date::getNumericDateFormat()) .'$~i', $varValue);
 	}
 
 
@@ -118,7 +120,7 @@ class Validator
 	 */
 	public static function isTime($varValue)
 	{
-		return preg_match('~^'. \Date::getRegexp(\Date::getNumericTimeFormat()) .'$~i', $varValue);
+		return preg_match('~^'. Date::getRegexp(Date::getNumericTimeFormat()) .'$~i', $varValue);
 	}
 
 
@@ -131,7 +133,7 @@ class Validator
 	 */
 	public static function isDatim($varValue)
 	{
-		return preg_match('~^'. \Date::getRegexp(\Date::getNumericDatimFormat()) .'$~i', $varValue);
+		return preg_match('~^'. Date::getRegexp(Date::getNumericDatimFormat()) .'$~i', $varValue);
 	}
 
 
@@ -144,7 +146,7 @@ class Validator
 	 */
 	public static function isEmail($varValue)
 	{
-		return preg_match('/^(\w+[!#\$%&\'\*\+\-\/=\?^_`\.\{\|\}~]*)+(?<!\.)@\w+([_\.-]*\w+)*\.[A-Za-z]{2,6}$/', \Idna::encodeEmail($varValue));
+		return preg_match('/^(\w+[!#\$%&\'\*\+\-\/=\?^_`\.\{\|\}~]*)+(?<!\.)@\w+([_\.-]*\w+)*\.[A-Za-z]{2,6}$/', Idna::encodeEmail($varValue));
 	}
 
 
@@ -159,11 +161,11 @@ class Validator
 	{
 		if (function_exists('mb_eregi'))
 		{
-			return mb_eregi('^[[:alnum:]\.\+\/\?#%:,;\{\}\(\)\[\]@&=~_-]+$', \Idna::encodeUrl($varValue));
+			return mb_eregi('^[[:alnum:]\.\+\/\?#%:,;\{\}\(\)\[\]@&=~_-]+$', Idna::encodeUrl($varValue));
 		}
 		else
 		{
-			return preg_match('/^[\pN\pL\.\+\/\?#%:,;\{\}\(\)\[\]@&=~_-]+$/u', \Idna::encodeUrl($varValue));
+			return preg_match('/^[\pN\pL\.\+\/\?#%:,;\{\}\(\)\[\]@&=~_-]+$/u', Idna::encodeUrl($varValue));
 		}
 	}
 
@@ -271,7 +273,7 @@ class Validator
 	{
 		if (strlen($varValue) == 16)
 		{
-			$varValue = \String::binToUuid($varValue);
+			$varValue = String::binToUuid($varValue);
 		}
 
 		return preg_match('/^[a-f0-9]{8}\-[a-f0-9]{4}\-[a-f0-9]{4}\-[a-f0-9]{4}\-[a-f0-9]{12}$/', $varValue);

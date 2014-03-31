@@ -12,6 +12,9 @@
 
 namespace Contao\Database;
 
+use Config, Controller, Database, Database\Result, Exception, File, FilesModel,
+	Folder;
+
 
 /**
  * Adjust the database if the system is updated
@@ -20,7 +23,7 @@ namespace Contao\Database;
  * @author    Leo Feyer <https://github.com/leofeyer>
  * @copyright Leo Feyer 2005-2014
  */
-class Updater extends \Controller
+class Updater extends Controller
 {
 
 	/**
@@ -137,7 +140,7 @@ class Updater extends \Controller
 
 		// Create a theme from the present resources
 		$this->Database->prepare("INSERT INTO tl_theme SET tstamp=?, name=?")
-					   ->execute(time(), \Config::get('websiteTitle'));
+					   ->execute(time(), Config::get('websiteTitle'));
 
 		// Adjust the back end user permissions
 		$this->Database->query("ALTER TABLE `tl_user` ADD `themes` blob NULL");
@@ -313,7 +316,7 @@ class Updater extends \Controller
 			{
 				if (!file_exists(TL_ROOT . '/system/modules/' . $strFolder . '/html/.htaccess'))
 				{
-					\File::putContent('system/modules/' . $strFolder . '/html/.htaccess', "<IfModule !mod_authz_core.c>\n  Order allow,deny\n  Allow from all\n</IfModule>\n<IfModule mod_authz_core.c>\n  Require all granted\n</IfModule>");
+					File::putContent('system/modules/' . $strFolder . '/html/.htaccess', "<IfModule !mod_authz_core.c>\n  Order allow,deny\n  Allow from all\n</IfModule>\n<IfModule mod_authz_core.c>\n  Require all granted\n</IfModule>");
 				}
 			}
 		}
@@ -534,7 +537,7 @@ class Updater extends \Controller
 
 				if ($objParent->numRows < 1)
 				{
-					throw new \Exception('Invalid parent ID ' . $objFiles->pid_backup);
+					throw new Exception('Invalid parent ID ' . $objFiles->pid_backup);
 				}
 
 				$this->Database->prepare("UPDATE tl_files SET pid=? WHERE pid_backup=?")
@@ -560,7 +563,7 @@ class Updater extends \Controller
 	{
 		if ($strPath === null)
 		{
-			$strPath = \Config::get('uploadPath');
+			$strPath = Config::get('uploadPath');
 		}
 
 		$arrMeta = array();
@@ -589,7 +592,7 @@ class Updater extends \Controller
 		// Folders
 		foreach ($arrFolders as $strFolder)
 		{
-			$objFolder = new \Folder($strFolder);
+			$objFolder = new Folder($strFolder);
 			$strUuid = $this->Database->getUuid();
 
 			$this->Database->prepare("INSERT INTO tl_files (pid, tstamp, uuid, name, type, path, hash) VALUES (?, ?, ?, ?, 'folder', ?, ?)")
@@ -617,7 +620,7 @@ class Updater extends \Controller
 				}
 			}
 
-			$objFile = new \File($strFile, true);
+			$objFile = new File($strFile, true);
 			$strUuid = $this->Database->getUuid();
 
 			$this->Database->prepare("INSERT INTO tl_files (pid, tstamp, uuid, name, type, path, extension, hash) VALUES (?, ?, ?, ?, 'file', ?, ?, ?)")
@@ -679,7 +682,7 @@ class Updater extends \Controller
 			{
 				$this->loadDataContainer($strTable);
 			}
-			catch (\Exception $e)
+			catch (Exception $e)
 			{
 				continue;
 			}
@@ -763,7 +766,7 @@ class Updater extends \Controller
 	 */
 	public static function convertSingleField($table, $field)
 	{
-		$objDatabase = \Database::getInstance();
+		$objDatabase = Database::getInstance();
 
 		// Get the non-empty rows
 		$objRow = $objDatabase->query("SELECT id, $field FROM $table WHERE $field!=''");
@@ -791,7 +794,7 @@ class Updater extends \Controller
 			// Numeric ID to UUID
 			if ($objHelper->isNumeric)
 			{
-				$objFile = \FilesModel::findByPk($objHelper->value);
+				$objFile = FilesModel::findByPk($objHelper->value);
 
 				$objDatabase->prepare("UPDATE $table SET $field=? WHERE id=?")
 							->execute($objFile->uuid, $objRow->id);
@@ -800,7 +803,7 @@ class Updater extends \Controller
 			// Path to UUID
 			else
 			{
-				$objFile = \FilesModel::findByPath($objHelper->value);
+				$objFile = FilesModel::findByPath($objHelper->value);
 
 				$objDatabase->prepare("UPDATE $table SET $field=? WHERE id=?")
 							->execute($objFile->uuid, $objRow->id);
@@ -817,7 +820,7 @@ class Updater extends \Controller
 	 */
 	public static function convertMultiField($table, $field)
 	{
-		$objDatabase = \Database::getInstance();
+		$objDatabase = Database::getInstance();
 
 		// Get the non-empty rows
 		$objRow = $objDatabase->query("SELECT id, $field FROM $table WHERE $field!=''");
@@ -854,14 +857,14 @@ class Updater extends \Controller
 				// Numeric ID to UUID
 				if ($objHelper->isNumeric)
 				{
-					$objFile = \FilesModel::findByPk($objHelper->value[$k]);
+					$objFile = FilesModel::findByPk($objHelper->value[$k]);
 					$arrValues[$k] = $objFile->uuid;
 				}
 
 				// Path to UUID
 				else
 				{
-					$objFile = \FilesModel::findByPath($objHelper->value[$k]);
+					$objFile = FilesModel::findByPath($objHelper->value[$k]);
 					$arrValues[$k] = $objFile->uuid;
 				}
 			}
@@ -880,7 +883,7 @@ class Updater extends \Controller
 	 */
 	public static function convertOrderField($table, $field)
 	{
-		$objDatabase = \Database::getInstance();
+		$objDatabase = Database::getInstance();
 
 		// Get the non-empty rows
 		$objRow = $objDatabase->query("SELECT id, $field FROM $table WHERE $field LIKE '%,%'");
@@ -910,13 +913,13 @@ class Updater extends \Controller
 		if (!is_array($value))
 		{
 			$return->value = rtrim($value, "\x00");
-			$return->isUuid = (strlen($value) == 16 && !is_numeric($return->value) && strncmp($return->value, \Config::get('uploadPath') . '/', strlen(\Config::get('uploadPath')) + 1) !== 0);
+			$return->isUuid = (strlen($value) == 16 && !is_numeric($return->value) && strncmp($return->value, Config::get('uploadPath') . '/', strlen(Config::get('uploadPath')) + 1) !== 0);
 			$return->isNumeric = (is_numeric($return->value) && $return->value > 0);
 		}
 		else
 		{
 			$return->value = array_map(function($var) { return rtrim($var, "\x00"); }, $value);
-			$return->isUuid = (strlen($value[0]) == 16 && !is_numeric($return->value[0]) && strncmp($return->value[0], \Config::get('uploadPath') . '/', strlen(\Config::get('uploadPath')) + 1) !== 0);
+			$return->isUuid = (strlen($value[0]) == 16 && !is_numeric($return->value[0]) && strncmp($return->value[0], Config::get('uploadPath') . '/', strlen(Config::get('uploadPath')) + 1) !== 0);
 			$return->isNumeric = (is_numeric($return->value[0]) && $return->value[0] > 0);
 		}
 
@@ -927,11 +930,11 @@ class Updater extends \Controller
 	/**
 	 * Create a content element
 	 *
-	 * @param \Database\Result $objElement A database result object
-	 * @param string           $strPtable  The name of the parent table
-	 * @param string           $strField   The name of the text column
+	 * @param Result $objElement A database result object
+	 * @param string $strPtable  The name of the parent table
+	 * @param string $strField   The name of the text column
 	 */
-	protected function createContentElement(\Database\Result $objElement, $strPtable, $strField)
+	protected function createContentElement(Result $objElement, $strPtable, $strField)
 	{
 		$set = array
 		(

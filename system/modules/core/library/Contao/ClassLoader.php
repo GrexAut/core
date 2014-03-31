@@ -12,6 +12,8 @@
 
 namespace Contao;
 
+use Config, ModuleLoader;
+
 
 /**
  * Automatically loads class files based on a mapper array
@@ -144,7 +146,7 @@ class ClassLoader
 		// The class file is set in the mapper
 		if (isset(self::$classes[$class]))
 		{
-			if (\Config::get('debugMode'))
+			if (Config::get('debugMode'))
 			{
 				$GLOBALS['TL_DEBUG']['classes_set'][] = $class;
 			}
@@ -155,7 +157,7 @@ class ClassLoader
 		// Find the class in the registered namespaces
 		elseif (($namespaced = self::findClass($class)) != false)
 		{
-			if (\Config::get('debugMode'))
+			if (Config::get('debugMode'))
 			{
 				$GLOBALS['TL_DEBUG']['classes_aliased'][] = $class . ' <span style="color:#999">(' . $namespaced . ')</span>';
 			}
@@ -207,13 +209,13 @@ class ClassLoader
 		$strCacheFile = 'system/cache/config/autoload.php';
 
 		// Try to load from cache
-		if (!\Config::get('bypassCache') && file_exists(TL_ROOT . '/' . $strCacheFile))
+		if (!Config::get('bypassCache') && file_exists(TL_ROOT . '/' . $strCacheFile))
 		{
 			include TL_ROOT . '/' . $strCacheFile;
 		}
 		else
 		{
-			foreach (\ModuleLoader::getActive() as $module)
+			foreach (ModuleLoader::getActive() as $module)
 			{
 				$file = 'system/modules/' . $module . '/config/autoload.php';
 

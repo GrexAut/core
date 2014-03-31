@@ -10,11 +10,9 @@
  * @license http://www.gnu.org/licenses/lgpl-3.0.html LGPL
  */
 
-
-/**
- * Run in a custom namespace, so the class can be replaced
- */
 namespace Contao;
+
+use Environment, Input, FrontendTemplate, Template;
 
 
 /**
@@ -90,7 +88,7 @@ class Pagination
 
 	/**
 	 * Template object
-	 * @var \Template
+	 * @var Template
 	 */
 	protected $objTemplate;
 
@@ -128,13 +126,13 @@ class Pagination
 	/**
 	 * Set the number of rows, the number of results per pages and the number of links
 	 *
-	 * @param integer   $intRows          The number of rows
-	 * @param integer   $intPerPage       The number of items per page
-	 * @param integer   $intNumberOfLinks The number of links to generate
-	 * @param string    $strParameter     The parameter name
-	 * @param \Template $objTemplate      The template object
+	 * @param integer  $intRows          The number of rows
+	 * @param integer  $intPerPage       The number of items per page
+	 * @param integer  $intNumberOfLinks The number of links to generate
+	 * @param string   $strParameter     The parameter name
+	 * @param Template $objTemplate      The template object
 	 */
-	public function __construct($intRows, $intPerPage, $intNumberOfLinks=7, $strParameter='page', \Template $objTemplate=null)
+	public function __construct($intRows, $intPerPage, $intNumberOfLinks=7, $strParameter='page', Template $objTemplate=null)
 	{
 		$this->intPage = 1;
 		$this->intRows = (int) $intRows;
@@ -148,9 +146,9 @@ class Pagination
 		$this->lblLast = $GLOBALS['TL_LANG']['MSC']['last'];
 		$this->lblTotal = $GLOBALS['TL_LANG']['MSC']['totalPages'];
 
-		if (\Input::get($strParameter) != '' && \Input::get($strParameter) > 0)
+		if (Input::get($strParameter) != '' && Input::get($strParameter) > 0)
 		{
-			$this->intPage = \Input::get($strParameter);
+			$this->intPage = Input::get($strParameter);
 		}
 
 		$this->strParameter = $strParameter;
@@ -158,7 +156,7 @@ class Pagination
 		// Backwards compatibility
 		if ($objTemplate === null)
 		{
-			$objTemplate = new \FrontendTemplate('pagination');
+			$objTemplate = new FrontendTemplate('pagination');
 		}
 
 		$this->objTemplate = $objTemplate;
@@ -224,7 +222,7 @@ class Pagination
 		}
 
 		$blnQuery = false;
-		$this->strUrl = preg_replace('/\?.*$/', '', \Environment::get('request'));
+		$this->strUrl = preg_replace('/\?.*$/', '', Environment::get('request'));
 
 		// Prepare the URL
 		foreach (preg_split('/&(amp;)?/', $_SERVER['QUERY_STRING'], -1, PREG_SPLIT_NO_EMPTY) as $fragment)

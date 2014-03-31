@@ -12,6 +12,8 @@
 
 namespace Contao\Database;
 
+use Database, Database\Mysql\Statement, Exception;
+
 
 /**
  * MySQL-specific database class
@@ -20,7 +22,7 @@ namespace Contao\Database;
  * @author    Leo Feyer <https://github.com/leofeyer>
  * @copyright Leo Feyer 2005-2014
  */
-class Mysql extends \Database
+class Mysql extends Database
 {
 
 	/**
@@ -33,7 +35,7 @@ class Mysql extends \Database
 	/**
 	 * Connect to the database server and select the database
 	 *
-	 * @throws \Exception If the connection cannot be established
+	 * @throws Exception If the connection cannot be established
 	 */
 	protected function connect()
 	{
@@ -60,7 +62,7 @@ class Mysql extends \Database
 
 		if (mysql_error())
 		{
-			throw new \Exception(mysql_error());
+			throw new Exception(mysql_error());
 		}
 
 		mysql_query("SET sql_mode=''", $this->resConnection);
@@ -346,15 +348,15 @@ class Mysql extends \Database
 
 
 	/**
-	 * Create a Database\Statement object
+	 * Create a database statement object
 	 *
 	 * @param resource $resConnection        The connection ID
 	 * @param boolean  $blnDisableAutocommit If true, autocommitting will be disabled
 	 *
-	 * @return \Database\Mysql\Statement The Database\Statement object
+	 * @return Statement The database statement object
 	 */
 	protected function createStatement($resConnection, $blnDisableAutocommit)
 	{
-		return new \Database\Mysql\Statement($resConnection, $blnDisableAutocommit);
+		return new Statement($resConnection, $blnDisableAutocommit);
 	}
 }

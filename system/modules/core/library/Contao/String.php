@@ -12,6 +12,8 @@
 
 namespace Contao;
 
+use Config, Exception;
+
 
 /**
  * Provides string manipulation methods
@@ -31,7 +33,7 @@ class String
 
 	/**
 	 * Object instance (Singleton)
-	 * @var \String
+	 * @var String
 	 */
 	protected static $objInstance;
 
@@ -118,7 +120,7 @@ class String
 		$arrEmptyTags = array('area', 'base', 'br', 'col', 'hr', 'img', 'input', 'frame', 'link', 'meta', 'param');
 
 		$strString = preg_replace('/[\t\n\r]+/', ' ', $strString);
-		$strString = strip_tags($strString, \Config::get('allowedTags'));
+		$strString = strip_tags($strString, Config::get('allowedTags'));
 		$strString = preg_replace('/ +/', ' ', $strString);
 
 		// Seperate tags and text
@@ -233,7 +235,7 @@ class String
 
 		if ($strCharset === null)
 		{
-			$strCharset = \Config::get('characterSet');
+			$strCharset = Config::get('characterSet');
 		}
 
 		$strString = preg_replace('/(&#*\w+)[\x00-\x20]+;/i', '$1;', $strString);
@@ -470,14 +472,14 @@ class String
 	 *
 	 * @return string The converted string
 	 *
-	 * @throws \Exception If $strString cannot be parsed
+	 * @throws Exception If $strString cannot be parsed
 	 */
 	public static function parseSimpleTokens($strString, $arrData)
 	{
 		$strReturn = '';
 
 		// Remove any unwanted tags (especially PHP tags)
-		$strString = strip_tags($strString, \Config::get('allowedTags'));
+		$strString = strip_tags($strString, Config::get('allowedTags'));
 		$arrTags = preg_split('/(\{[^\}]+\})/', $strString, -1, PREG_SPLIT_DELIM_CAPTURE|PREG_SPLIT_NO_EMPTY);
 
 		// Replace the tags
@@ -518,7 +520,7 @@ class String
 		// Throw an exception if there is an eval() error
 		if ($blnEval === false)
 		{
-			throw new \Exception("Error parsing simple tokens ($strReturn)");
+			throw new Exception("Error parsing simple tokens ($strReturn)");
 		}
 
 		// Return the evaled code
@@ -571,7 +573,7 @@ class String
 	/**
 	 * Return the object instance (Singleton)
 	 *
-	 * @return \String The object instance
+	 * @return String The object instance
 	 *
 	 * @deprecated String is now a static class
 	 */

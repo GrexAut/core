@@ -12,6 +12,8 @@
 
 namespace Contao;
 
+use Config, Exception, File, System;
+
 
 /**
  * Combines .css or .js files into one single file
@@ -30,7 +32,7 @@ namespace Contao;
  * @author    Leo Feyer <https://github.com/leofeyer>
  * @copyright Leo Feyer 2005-2014
  */
-class Combiner extends \System
+class Combiner extends System
 {
 
 	/**
@@ -80,7 +82,7 @@ class Combiner extends \System
 	 * @param string $strVersion An optional version number
 	 * @param string $strMedia   The media type of the file (.css only)
 	 *
-	 * @throws \Exception If $strFile is invalid
+	 * @throws Exception If $strFile is invalid
 	 */
 	public function add($strFile, $strVersion=null, $strMedia='all')
 	{
@@ -89,7 +91,7 @@ class Combiner extends \System
 		// Check the file type
 		if ($strType != self::CSS && $strType != self::JS)
 		{
-			throw new \Exception("Invalid file $strFile");
+			throw new Exception("Invalid file $strFile");
 		}
 
 		// Set the operation mode
@@ -99,7 +101,7 @@ class Combiner extends \System
 		}
 		elseif ($this->strMode != $strType)
 		{
-			throw new \Exception('You cannot mix different file types. Create another Combiner object instead.');
+			throw new Exception('You cannot mix different file types. Create another Combiner object instead.');
 		}
 
 		// Prevent duplicates
@@ -113,7 +115,7 @@ class Combiner extends \System
 		{
 			if ($this->strMode == self::JS)
 			{
-				throw new \Exception("File $strFile does not exist");
+				throw new Exception("File $strFile does not exist");
 			}
 			else
 			{
@@ -123,7 +125,7 @@ class Combiner extends \System
 				// Retry
 				if (!file_exists(TL_ROOT . '/' . $strFile))
 				{
-					throw new \Exception("File $strFile does not exist");
+					throw new Exception("File $strFile does not exist");
 				}
 			}
 		}
@@ -192,7 +194,7 @@ class Combiner extends \System
 		$strKey = substr(md5($this->strKey), 0, 12);
 
 		// Do not combine the files in debug mode (see #6450)
-		if (\Config::get('debugMode'))
+		if (Config::get('debugMode'))
 		{
 			$return = array();
 
@@ -218,7 +220,7 @@ class Combiner extends \System
 		}
 
 		// Create the file
-		$objFile = new \File('assets/' . $strTarget . '/' . $strKey . $this->strMode, true);
+		$objFile = new File('assets/' . $strTarget . '/' . $strKey . $this->strMode, true);
 		$objFile->truncate();
 
 		foreach ($this->arrFiles as $arrFile)
@@ -300,9 +302,9 @@ class Combiner extends \System
 		$objFile->close();
 
 		// Create a gzipped version
-		if (\Config::get('gzipScripts') && function_exists('gzencode'))
+		if (Config::get('gzipScripts') && function_exists('gzencode'))
 		{
-			\File::putContent('assets/' . $strTarget . '/' . $strKey . $this->strMode . '.gz', gzencode(file_get_contents(TL_ROOT . '/assets/' . $strTarget . '/' . $strKey . $this->strMode), 9));
+			File::putContent('assets/' . $strTarget . '/' . $strKey . $this->strMode . '.gz', gzencode(file_get_contents(TL_ROOT . '/assets/' . $strTarget . '/' . $strKey . $this->strMode), 9));
 		}
 
 		return $strUrl . 'assets/' . $strTarget . '/' . $strKey . $this->strMode;

@@ -12,6 +12,8 @@
 
 namespace Contao;
 
+use Config, Controller, Exception, ModuleLoader;
+
 
 /**
  * Loads a set of DCA files
@@ -28,7 +30,7 @@ namespace Contao;
  * @author    Leo Feyer <https://github.com/leofeyer>
  * @copyright Leo Feyer 2005-2014
  */
-class DcaLoader extends \Controller
+class DcaLoader extends Controller
 {
 
 	/**
@@ -43,13 +45,13 @@ class DcaLoader extends \Controller
 	 *
 	 * @param string $strTable The table name
 	 *
-	 * @throws \Exception If $strTable is empty
+	 * @throws Exception If $strTable is empty
 	 */
 	public function __construct($strTable)
 	{
 		if ($strTable == '')
 		{
-			throw new \Exception('The table name must not be empty');
+			throw new Exception('The table name must not be empty');
 		}
 
 		parent::__construct();
@@ -75,13 +77,13 @@ class DcaLoader extends \Controller
 		$strCacheFile = 'system/cache/dca/' . $this->strTable . '.php';
 
 		// Try to load from cache
-		if (!\Config::get('bypassCache') && file_exists(TL_ROOT . '/' . $strCacheFile))
+		if (!Config::get('bypassCache') && file_exists(TL_ROOT . '/' . $strCacheFile))
 		{
 			include TL_ROOT . '/' . $strCacheFile;
 		}
 		else
 		{
-			foreach (\ModuleLoader::getActive() as $strModule)
+			foreach (ModuleLoader::getActive() as $strModule)
 			{
 				$strFile = 'system/modules/' . $strModule . '/dca/' . $this->strTable . '.php';
 
