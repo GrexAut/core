@@ -12,7 +12,8 @@
 
 namespace Contao;
 
-use Iterator, SplHeap;
+use Iterator;
+use SplHeap;
 
 
 /**

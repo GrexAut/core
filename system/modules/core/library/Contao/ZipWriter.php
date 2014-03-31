@@ -12,7 +12,9 @@
 
 namespace Contao;
 
-use Exception, Files, Folder;
+use Contao\Files;
+use Contao\Folder;
+use Exception;
 
 
 /**

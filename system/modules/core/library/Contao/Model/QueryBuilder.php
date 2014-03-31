@@ -12,7 +12,7 @@
 
 namespace Contao\Model;
 
-use DcaExtractor;
+use Contao\DcaExtractor;
 
 
 /**

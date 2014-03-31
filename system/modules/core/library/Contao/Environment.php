@@ -12,7 +12,7 @@
 
 namespace Contao;
 
-use Config;
+use Contao\Config;
 
 
 /**

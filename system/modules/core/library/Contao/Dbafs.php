@@ -12,9 +12,17 @@
 
 namespace Contao;
 
-use Config, Database, Dbafs\Filter, Exception, File, FilesModel,
-	FilesystemIterator, Folder, InvalidArgumentException,
-	RecursiveDirectoryIterator, RecursiveIteratorIterator;
+use Contao\Config;
+use Contao\Database;
+use Contao\Dbafs\Filter;
+use Contao\File;
+use Contao\FilesModel;
+use Contao\Folder;
+use Exception;
+use FilesystemIterator;
+use InvalidArgumentException;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
 
 
 /**

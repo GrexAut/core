@@ -12,7 +12,8 @@
 
 namespace Contao\Database;
 
-use Exception, OutOfBoundsException;
+use Exception;
+use OutOfBoundsException;
 
 
 /**

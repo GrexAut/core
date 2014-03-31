@@ -12,7 +12,8 @@
 
 namespace Contao\Database\Mysql;
 
-use Database\Statement as AbstractStatement, Database\Mysql\Result;
+use Contao\Database\Statement as AbstractStatement;
+use Database\Mysql\Result;
 
 
 /**

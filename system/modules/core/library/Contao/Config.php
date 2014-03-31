@@ -12,7 +12,9 @@
 
 namespace Contao;
 
-use Files, ModuleLoader, System;
+use Contao\Files;
+use Contao\ModuleLoader;
+use Contao\System;
 
 
 /**

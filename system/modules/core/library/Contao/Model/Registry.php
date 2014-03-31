@@ -12,7 +12,9 @@
 
 namespace Contao\Model;
 
-use Countable, Model, RuntimeException;
+use Contao\Model;
+use Countable;
+use RuntimeException;
 
 
 /**

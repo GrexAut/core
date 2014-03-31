@@ -16,8 +16,16 @@
  */
 namespace Contao;
 
-use Backend, Config, DcaExtractor, Database, Environment, File, Folder,
-	ModuleLoader, Request, System;
+use Contao\Backend;
+use Contao\Config;
+use Contao\Database;
+use Contao\DcaExtractor;
+use Contao\Environment;
+use Contao\File;
+use Contao\Folder;
+use Contao\ModuleLoader;
+use Contao\Request;
+use Contao\System;
 
 
 /**

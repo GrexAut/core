@@ -12,7 +12,8 @@
 
 namespace Contao;
 
-use Config, UnresolvableDependenciesException;
+use Contao\Config;
+use UnresolvableDependenciesException;
 
 
 /**

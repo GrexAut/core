@@ -12,7 +12,8 @@
 
 namespace Contao\Database\Mysql;
 
-use Database\Result as AbstractResult, OutOfBoundsException;
+use Contao\Database\Result as AbstractResult;
+use OutOfBoundsException;
 
 
 /**

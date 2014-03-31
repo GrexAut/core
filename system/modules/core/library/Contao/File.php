@@ -12,7 +12,13 @@
 
 namespace Contao;
 
-use Config, Dbafs, Exception, FilesModel, Folder, Image, System;
+use Contao\Config;
+use Contao\Dbafs;
+use Contao\FilesModel;
+use Contao\Folder;
+use Contao\Image;
+use Contao\System;
+use Exception;
 
 
 /**

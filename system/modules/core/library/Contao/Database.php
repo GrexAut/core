@@ -12,7 +12,10 @@
 
 namespace Contao;
 
-use Config, Database\Statement, Database\Result, Exception;
+use Contao\Config;
+use Contao\Database\Statement;
+use Contao\Database\Result;
+use Exception;
 
 
 /**

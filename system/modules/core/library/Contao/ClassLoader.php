@@ -12,7 +12,8 @@
 
 namespace Contao;
 
-use Config, ModuleLoader;
+use Contao\Config;
+use Contao\ModuleLoader;
 
 
 /**

@@ -12,7 +12,9 @@
 
 namespace Contao;
 
-use Config, Environment, FeedItem;
+use Contao\Config;
+use Contao\Environment;
+use Contao\FeedItem;
 
 
 /**

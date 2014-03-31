@@ -12,7 +12,11 @@
 
 namespace Contao;
 
-use Config, Controller, Input, InvalidArgumentException, Model\Registry;
+use Contao\Config;
+use Contao\Controller;
+use Contao\Input;
+use Contao\Model\Registry;
+use InvalidArgumentException;
 
 
 /**

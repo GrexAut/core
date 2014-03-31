@@ -12,7 +12,10 @@
 
 namespace Contao;
 
-use Config, Controller, Database\Installer, Exception;
+use Contao\Config;
+use Contao\Controller;
+use Contao\Database\Installer;
+use Exception;
 
 
 /**

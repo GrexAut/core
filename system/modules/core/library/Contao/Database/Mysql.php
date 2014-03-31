@@ -12,7 +12,9 @@
 
 namespace Contao\Database;
 
-use Database, Database\Mysql\Statement, Exception;
+use Contao\Database;
+use Contao\Database\Mysql\Statement;
+use Exception;
 
 
 /**

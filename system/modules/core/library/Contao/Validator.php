@@ -12,7 +12,9 @@
 
 namespace Contao;
 
-use Date, Idna, String;
+use Contao\Date;
+use Contao\Idna;
+use Contao\String;
 
 
 /**

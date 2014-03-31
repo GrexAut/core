@@ -12,7 +12,10 @@
 
 namespace Contao;
 
-use Environment, Input, FrontendTemplate, Template;
+use Contao\Environment;
+use Contao\FrontendTemplate;
+use Contao\Input;
+use Contao\Template;
 
 
 /**

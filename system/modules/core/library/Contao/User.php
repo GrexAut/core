@@ -12,8 +12,16 @@
 
 namespace Contao;
 
-use Config, Date, Email, Encryption, Environment, FrontendUser, Idna, Input,
-	Message, System;
+use Contao\Config;
+use Contao\Date;
+use Contao\Email;
+use Contao\Encryption;
+use Contao\Environment;
+use Contao\FrontendUser;
+use Contao\Idna;
+use Contao\Input;
+use Contao\Message;
+use Contao\System;
 
 
 /**

@@ -12,9 +12,16 @@
 
 namespace Contao;
 
-use Database, Database\Result, Database\Statement, DcaExtractor, Exception,
-	InvalidArgumentException, LogicException, Model\Collection,
-	Model\QueryBuilder, Model\Registry;
+use Contao\Database;
+use Contao\Database\Result;
+use Contao\Database\Statement;
+use Contao\DcaExtractor;
+use Contao\Model\Collection;
+use Contao\Model\QueryBuilder;
+use Contao\Model\Registry;
+use Exception;
+use InvalidArgumentException;
+use LogicException;
 
 
 /**

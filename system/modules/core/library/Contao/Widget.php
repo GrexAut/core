@@ -12,8 +12,15 @@
 
 namespace Contao;
 
-use Database, Date, Controller, Encryption, Idna, Input, OutOfBoundsException,
-	String, Validator;
+use Contao\Database;
+use Contao\Date;
+use Contao\Controller;
+use Contao\Encryption;
+use Contao\Idna;
+use Contao\Input;
+use Contao\String;
+use Contao\Validator;
+use OutOfBoundsException;
 
 
 /**

@@ -12,9 +12,17 @@
 
 namespace Contao;
 
-use Config, Environment, Exception, Idna, String, Swift_Attachment,
-	Swift_EmbeddedFile, Swift_Mailer, Swift_MailTransport, Swift_Message,
-	Swift_SmtpTransport;
+use Contao\Config;
+use Contao\Environment;
+use Contao\Idna;
+use Contao\String;
+use Exception;
+use Swift_Attachment;
+use Swift_EmbeddedFile;
+use Swift_Mailer;
+use Swift_MailTransport;
+use Swift_Message;
+use Swift_SmtpTransport;
 
 
 /**

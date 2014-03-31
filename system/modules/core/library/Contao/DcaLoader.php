@@ -12,7 +12,10 @@
 
 namespace Contao;
 
-use Config, Controller, Exception, ModuleLoader;
+use Contao\Config;
+use Contao\Controller;
+use Contao\ModuleLoader;
+use Exception;
 
 
 /**

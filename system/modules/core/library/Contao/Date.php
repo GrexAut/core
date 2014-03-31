@@ -12,7 +12,9 @@
 
 namespace Contao;
 
-use Config, Exception, OutOfBoundsException;
+use Contao\Config;
+use Exception;
+use OutOfBoundsException;
 
 
 /**

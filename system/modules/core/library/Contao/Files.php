@@ -12,7 +12,11 @@
 
 namespace Contao;
 
-use Config, Exception, Files\Ftp, Files\Php, ModuleLoader, SMHExtended;
+use Contao\Config;
+use Contao\Files\Ftp;
+use Contao\Files\Php;
+use Contao\ModuleLoader;
+use Exception;
 
 
 /**
@@ -79,7 +83,7 @@ abstract class Files
 			// HOOK: use the smhextended module
 			elseif (Config::get('useSmhExtended') && in_array('smhextended', ModuleLoader::getActive()))
 			{
-				self::$objInstance = new SMHExtended();
+				self::$objInstance = new \SMHExtended();
 			}
 
 			// Use PHP to modify files

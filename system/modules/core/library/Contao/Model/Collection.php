@@ -12,9 +12,15 @@
 
 namespace Contao\Model;
 
-use ArrayAccess, ArrayIterator, Countable, Database\Result,
-	InvalidArgumentException, IteratorAggregate, Model, Model\Registry,
-	RuntimeException;
+use Contao\Database\Result;
+use Contao\Model;
+use Contao\Model\Registry;
+use ArrayAccess;
+use ArrayIterator;
+use Countable;
+use InvalidArgumentException;
+use IteratorAggregate;
+use RuntimeException;
 
 
 /**

@@ -12,7 +12,9 @@
 
 namespace Contao;
 
-use File, Environment, System;
+use Contao\Environment;
+use Contao\File;
+use Contao\System;
 
 
 /**

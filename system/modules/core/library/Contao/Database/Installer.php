@@ -12,7 +12,10 @@
 
 namespace Contao\Database;
 
-use Config, Controller, DcaExtractor, ModuleLoader;
+use Contao\Config;
+use Contao\Controller;
+use Contao\DcaExtractor;
+use Contao\ModuleLoader;
 
 
 /**

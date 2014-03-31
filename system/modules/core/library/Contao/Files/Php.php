@@ -12,7 +12,7 @@
 
 namespace Contao\Files;
 
-use Files;
+use Contao\Files;
 
 
 /**

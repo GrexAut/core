@@ -12,7 +12,9 @@
 
 namespace Contao\Dbafs;
 
-use Config, RecursiveFilterIterator, RecursiveIterator;
+use Contao\Config;
+use RecursiveFilterIterator;
+use RecursiveIterator;
 
 
 /**

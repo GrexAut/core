@@ -12,7 +12,11 @@
 
 namespace Contao;
 
-use Backend, Config, File, Files, System;
+use Contao\Backend;
+use Contao\Config;
+use Contao\File;
+use Contao\Files;
+use Contao\System;
 
 
 /**
