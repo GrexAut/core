@@ -65,25 +65,21 @@ require TL_ROOT . '/system/helper/exception.php';
 
 
 /**
- * Register the helper autoloader
+ * Include some classes required for further processing
  */
-function helper_loader($class) {
-	$class = str_replace('Contao\\', '', $class);
-	$path  = 'system/modules/core/library/Contao/' . $class . '.php';
+require TL_ROOT . '/system/modules/core/library/Contao/Config.php';
+class_alias('Contao\\Config', 'Config');
 
-	if (file_exists(TL_ROOT . '/' . $path)) {
-		require TL_ROOT . '/' . $path;
-		class_alias('Contao\\' . $class, $class);
-	}
-}
+require TL_ROOT . '/system/modules/core/library/Contao/ClassLoader.php';
+class_alias('Contao\\ClassLoader', 'ClassLoader');
 
-spl_autoload_register('helper_loader');
+require TL_ROOT . '/system/modules/core/library/Contao/ModuleLoader.php';
+class_alias('Contao\\ModuleLoader', 'ModuleLoader');
 
+require TL_ROOT . '/system/modules/core/library/Contao/TemplateLoader.php';
+class_alias('Contao\\TemplateLoader', 'TemplateLoader');
 
-/**
- * Preload the configuration (see #5872)
- */
-Config::preload();
+Config::preload(); // see #5872
 
 
 /**
@@ -97,12 +93,6 @@ catch (UnresolvableDependenciesException $e)
 {
 	die($e->getMessage()); // see #6343
 }
-
-
-/**
- * Unregister the helper autoloader
- */
-spl_autoload_unregister('helper_loader');
 
 
 /**
